@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://unpkg.com/@@picocss/pico@@latest/css/pico.classless.min.css">
+</head>
+<body>
+    <nav>
+        <a asp-controller="Movie" asp-action="Index" >Index</a>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="Movie" asp-action="Create">Create</a>
+            <a asp-controller="Account" asp-action="Logout">Logout</a>
+            <p>user: @User.Identity.Name </p>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login">Login</a>
+            <a asp-controller="Account" asp-action="Register">Register</a>
+        }
+
+        
+    </nav>
+    <div>
+        @RenderBody()
+    </div>
+    <footer>
+        &copy; IT-West
+    </footer>
+
+    @RenderSection("scripts", false)
+</body>
+</html>

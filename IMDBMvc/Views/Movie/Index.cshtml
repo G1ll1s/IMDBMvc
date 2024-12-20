@@ -1,0 +1,87 @@
+﻿@model IndexVM
+
+@if (ViewData["Message"] != null)
+{ 
+    <div>
+        <h4>@ViewData["Message"]</h4>
+    </div>
+}
+
+<div>
+    <input type="text" id="searchInput" placeholder="Search movies...." />
+    <button id="searchButton">Search</button>
+</div>
+<br />
+<div id="results"></div>
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Genre</th>
+            <th>Rating</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model.Movies){
+            <tr>
+                <td>
+                <a asp-controller="Movie" asp-action="details" asp-route-id="@item.Id">
+                    <img src="@item.ImageUrl" alt="@item.Title" width="150" />
+                </a>
+                </td>
+                <td>@item.Title</td>
+                <td>@item.Genre</td>
+                <td style="color:yellow">@item.Rating/10</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@section scripts
+{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#searchButton').on('click', function () {
+                var searchQuery = $('#searchInput').val(); // Hämta värdet från inputfältet
+
+                $.ajax({
+                    url: '/Movie/Search', 
+                    type: 'GET',
+                    data: { search: searchQuery }, // Skicka sökfrågan som en parameter
+                    success: function (response) {
+                        // Töm tidigare resultat
+                        $('#results').empty();
+
+                        if (response.length > 0) {
+                            // Loopa genom filmerna och visa dem i resultatområdet
+                            response.forEach(function (movie) {
+                                $('#results').append(`
+                                    <div>
+                                        <img src="${movie.imageUrl}" alt="${movie.title}" width="100">
+                                        <h3>${movie.title}</h3>
+                                        <p>Genre: ${movie.genre}</p>
+                                        <p style="color:yellow">Rating: ${movie.rating}/10</p>
+                                    </div>
+                                `);
+                            });
+                        } else {
+                            $('#results').append('<p>Inga filmer hittades.</p>');
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Ett fel inträffade:', error);
+                        $('#results').append('<p>Ett fel inträffade vid sökningen.</p>');
+                    }
+                });
+            });
+        });
+    </script>
+}
